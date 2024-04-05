@@ -1,0 +1,217 @@
+Author : Graham Fox
+2023
+
+
+import os
+import random
+import time
+
+#### Ascii Art from - https://patorjk.com/software/taag/#p=display&h=1&v=1&f=Big%20Money-ne&t=Want%20to%20Play%3F
+
+clear_screen = '\033[2J'
+move_cursor_top_left = '\033[H'
+clear = lambda: os.system('clear')
+
+
+symbols = ['♣', '♠', '♦', '♥', '♣', '♠', '♦', '♥','7']
+
+winnings = ['♥♥♥','♠♠♠','♦♦♦','♣♣♣','777']
+
+
+#List used
+moneyitemized = []
+
+
+def reel():
+ 
+  return random.choice(symbols)
+
+
+def round():
+  global row
+  row = []
+ 
+
+  for i in range(30):
+
+          
+          row = [reel() for _ in range(9)]
+
+          
+          print_row(row)
+         
+
+
+
+def print_row(rows):
+    global money
+  
+    line = '''
+                                          AMOUNT - ${}
+                                        
+-------------------                       |------------------------------------------| 
+|  {}  |  {}  |  {}  |                       | 7 7 7 - 5x of your bet         	     | 
+|  -  |  -  |  -  |                       |All Matching Symbols - Win 2x Of Your Bet |
+|  {}  |  {}  |  {}  |	                  |Two Matching Symbols - Win 1/2 Of Your Bet|                        
+|  -  |  -  |  -  |                       |No Matching Symbols - Lose 1/2 Of Your Bet|
+|  {}  |  {}  |  {}  |	                  |------------------------------------------|                      
+-------------------                       
+'''
+    
+    print(clear_screen + move_cursor_top_left + line.format(int(money), *rows), end='\r')
+    time.sleep(0.1)
+
+
+
+# Student Parameter 
+
+# This gives diffrant outputs compared to wethar the hearts match the hears or if its 2 spades and a heart (Row 6)
+
+def checker(rows, win):
+  global money
+  time.sleep(0.2)
+
+  # Sequencing Selection It eration
+  for i in range(len(rows)):
+
+
+    if ''.join(rows[i:i + 3]) == ''.join(win[3]):
+      money = money * 5
+      return f"Mega Jackpot!! |5x| |{'•'.join(rows)}| You won {int(money)}!\n "
+
+
+    elif ''.join(rows[i:i + 3]) == ''.join(rows[i] * 3):
+      money = money * 2
+      return f'Congratulations! |2x| |{"•".join(rows)}| You won {int(money -moneyitemized[-1])}!\n'
+
+    elif rows[i] == rows[i + 1] or rows[i] == rows[i +2] or rows[i +1] == rows[i +2]:
+      money = money * 1.5
+      return f'Congratulations! |1 1/2| |{"•".join(rows)}| You won {int(money -moneyitemized[-1])}!\n'
+
+
+    else:
+      money = money - money / 2
+      return f'Oh NO! |-1/2| |{"•".join(rows)}| You lost {int(money -moneyitemized[-1])}\n'
+
+
+
+
+def main():
+    global row, money,moneyitemized,winnings
+
+    print(f'''\n\n
+
+░██╗░░░░░░░██╗░█████╗░███╗░░██╗████████╗ ████████╗░█████╗░ ██████╗░██╗░░░░░░█████╗░██╗░░░██╗░█████╗░
+░██║░░██╗░░██║██╔══██╗████╗░██║╚══██╔══╝ ╚══██╔══╝██╔══██╗ ██╔══██╗██║░░░░░██╔══██╗╚██╗░██╔╝██╔══██╗
+░╚██╗████╗██╔╝███████║██╔██╗██║░░░██║░░░ ░░░██║░░░██║░░██║ ██████╔╝██║░░░░░███████║░╚████╔╝░╚═╝███╔╝
+░░████╔═████║░██╔══██║██║╚████║░░░██║░░░ ░░░██║░░░██║░░██║ ██╔═══╝░██║░░░░░██╔══██║░░╚██╔╝░░░░░╚══╝░
+░░╚██╔╝░╚██╔╝░██║░░██║██║░╚███║░░░██║░░░ ░░░██║░░░╚█████╔╝ ██║░░░░░███████╗██║░░██║░░░██║░░░░░░██╗░░
+░░░╚═╝░░░╚═╝░░╚═╝░░╚═╝╚═╝░░╚══╝░░░╚═╝░░░ ░░░╚═╝░░░░╚════╝░ ╚═╝░░░░░╚══════╝╚═╝░░╚═╝░░░╚═╝░░░░░░╚═╝░░                                                      
+''')
+    que = input(f"                                                   (y/n)  ")
+
+
+
+    if que.lower() != 'y':
+        quit()
+    clear()
+
+
+
+    game = input(f"\nDo you need directions? (y/n) ")
+    clear()
+
+
+
+    if game.lower() == 'y':
+
+        print(f'''\nDirections Of Use:\n\nPlace your bet: Choose the amount of coins you want to bet for each spin.
+
+-Spin the reels: Follow the direction to spin the matchine. The reels will start spinning and stop at random positions.
+
+-Check for winning combinations: Look for matching symbols on the payline (Middle Row). If you hit a winning combination, you'll be paid out according to the paytable.
+
+-Collect your winnings or keep playing: You can choose to collect your winnings or keep playing for more chances to win. If you run out of coins, you can either buy more or leave''')
+        time.sleep(2)
+
+    money = int(input(f"\n\nHow much will you be betting? $"))
+    clear()
+    
+    if money < 10:
+        print("The minimum bet is $10. Please enter a valid amount.")
+        print('''
+██████╗░░█████╗░██╗░░░██╗██████╗░██╗░░░░░███████╗ ██╗░░░██╗░█████╗░██╗░░░██╗██████╗░ ███╗░░░███╗░█████╗░███╗░░██╗███████╗██╗░░░██╗██╗
+██╔══██╗██╔══██╗██║░░░██║██╔══██╗██║░░░░░██╔════╝ ╚██╗░██╔╝██╔══██╗██║░░░██║██╔══██╗ ████╗░████║██╔══██╗████╗░██║██╔════╝╚██╗░██╔╝██║
+██║░░██║██║░░██║██║░░░██║██████╦╝██║░░░░░█████╗░░ ░╚████╔╝░██║░░██║██║░░░██║██████╔╝ ██╔████╔██║██║░░██║██╔██╗██║█████╗░░░╚████╔╝░██║
+██║░░██║██║░░██║██║░░░██║██╔══██╗██║░░░░░██╔══╝░░ ░░╚██╔╝░░██║░░██║██║░░░██║██╔══██╗ ██║╚██╔╝██║██║░░██║██║╚████║██╔══╝░░░░╚██╔╝░░╚═╝
+██████╔╝╚█████╔╝╚██████╔╝██████╦╝███████╗███████╗ ░░░██║░░░╚█████╔╝╚██████╔╝██║░░██║ ██║░╚═╝░██║╚█████╔╝██║░╚███║███████╗░░░██║░░░██╗
+╚═════╝░░╚════╝░░╚═════╝░╚═════╝░╚══════╝╚══════╝ ░░░╚═╝░░░░╚════╝░░╚═════╝░╚═╝░░╚═╝ ╚═╝░░░░░╚═╝░╚════╝░╚═╝░░╚══╝╚══════╝░░░╚═╝░░░╚═╝
+                               
+                                ░██████╗██████╗░██╗███╗░░██╗  ███╗░░██╗░█████╗░░██╗░░░░░░░██╗
+                                ██╔════╝██╔══██╗██║████╗░██║  ████╗░██║██╔══██╗░██║░░██╗░░██║
+                                ╚█████╗░██████╔╝██║██╔██╗██║  ██╔██╗██║██║░░██║░╚██╗████╗██╔╝
+                                ░╚═══██╗██╔═══╝░██║██║╚████║  ██║╚████║██║░░██║░░████╔═████║░
+                                ██████╔╝██║░░░░░██║██║░╚███║  ██║░╚███║╚█████╔╝░░╚██╔╝░╚██╔╝░
+                                ╚═════╝░╚═╝░░░░░╚═╝╚═╝░░╚══╝  ╚═╝░░╚══╝░╚════╝░░░░╚═╝░░░╚═╝░░
+╚ ''')
+        play = input("\n\n                                                Want to spin? (y/n) ")
+        if play.lower() == 'y':
+            clear()
+    else:
+
+
+        print('''
+██████╗░░█████╗░██╗░░░██╗██████╗░██╗░░░░░███████╗ ██╗░░░██╗░█████╗░██╗░░░██╗██████╗░ ███╗░░░███╗░█████╗░███╗░░██╗███████╗██╗░░░██╗██╗
+██╔══██╗██╔══██╗██║░░░██║██╔══██╗██║░░░░░██╔════╝ ╚██╗░██╔╝██╔══██╗██║░░░██║██╔══██╗ ████╗░████║██╔══██╗████╗░██║██╔════╝╚██╗░██╔╝██║
+██║░░██║██║░░██║██║░░░██║██████╦╝██║░░░░░█████╗░░ ░╚████╔╝░██║░░██║██║░░░██║██████╔╝ ██╔████╔██║██║░░██║██╔██╗██║█████╗░░░╚████╔╝░██║
+██║░░██║██║░░██║██║░░░██║██╔══██╗██║░░░░░██╔══╝░░ ░░╚██╔╝░░██║░░██║██║░░░██║██╔══██╗ ██║╚██╔╝██║██║░░██║██║╚████║██╔══╝░░░░╚██╔╝░░╚═╝
+██████╔╝╚█████╔╝╚██████╔╝██████╦╝███████╗███████╗ ░░░██║░░░╚█████╔╝╚██████╔╝██║░░██║ ██║░╚═╝░██║╚█████╔╝██║░╚███║███████╗░░░██║░░░██╗
+╚═════╝░░╚════╝░░╚═════╝░╚═════╝░╚══════╝╚══════╝ ░░░╚═╝░░░░╚════╝░░╚═════╝░╚═╝░░╚═╝ ╚═╝░░░░░╚═╝░╚════╝░╚═╝░░╚══╝╚══════╝░░░╚═╝░░░╚═╝
+                               
+                                ░██████╗██████╗░██╗███╗░░██╗  ███╗░░██╗░█████╗░░██╗░░░░░░░██╗
+                                ██╔════╝██╔══██╗██║████╗░██║  ████╗░██║██╔══██╗░██║░░██╗░░██║
+                                ╚█████╗░██████╔╝██║██╔██╗██║  ██╔██╗██║██║░░██║░╚██╗████╗██╔╝
+                                ░╚═══██╗██╔═══╝░██║██║╚████║  ██║╚████║██║░░██║░░████╔═████║░
+                                ██████╔╝██║░░░░░██║██║░╚███║  ██║░╚███║╚█████╔╝░░╚██╔╝░╚██╔╝░
+                                ╚═════╝░╚═╝░░░░░╚═╝╚═╝░░╚══╝  ╚═╝░░╚══╝░╚════╝░░░░╚═╝░░░╚═╝░░
+╚ ''')
+        play = input("\n\n                                                Want to spin? (y/n) ")
+       
+        if play.lower() == 'y':
+            clear()
+  
+
+    while play.lower() == 'y' or play.lower() == 's':
+
+
+        moneyitemized.append(int(money))
+        money -= money/10
+        round()
+
+
+      
+        #Student calling procedure
+        print(checker(row[3:6],winnings))
+        
+        play = input("Would you like to spin again, or keep? (s/k) ")
+   
+        
+
+        #Data bieng used 
+
+        if play.lower() == 'k':
+
+            #Data being stored list
+
+            moneyitemized.append(int(money))
+
+            # If i didnt have this list of money Itemized, I would have to write oput a variable for each turn so calculate the last and first round in order to see how much was lost or gained.
+
+            moneymade = moneyitemized[-1] - moneyitemized[0]
+            
+            if moneymade <= 0:
+                print(f"\nThanks for playing! You lost ${-1*int(moneymade)} :( {moneyitemized[0]} -> {int(money)}\n")
+            else:
+                print(f"\nThanks for playing! You won ${int(moneymade)}! {moneyitemized[0]} -> {int(money)}\n")
+
+main()
